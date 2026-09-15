@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: a0231937e41989144bfc29dc5deb7727
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 201162
+  packageName: SCI-FI UI Components
+  packageVersion: 2.1
+  assetPath: Assets/SCI-FI UI Components/Common/Scripts/TextColorControl.cs
+  uploadId: 620951

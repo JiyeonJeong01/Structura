@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 6e673e49a0e2bee4fbe9b331acb2a3fb
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 201162
+  packageName: SCI-FI UI Components
+  packageVersion: 2.1
+  assetPath: Assets/SCI-FI UI Components/Common/Animation/Btn_Go.controller
+  uploadId: 620951

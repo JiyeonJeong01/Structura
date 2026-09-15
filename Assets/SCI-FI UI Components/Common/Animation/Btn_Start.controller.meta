@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: f0215710333e2264e93db0ab8e25cb37
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 9100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 201162
+  packageName: SCI-FI UI Components
+  packageVersion: 2.1
+  assetPath: Assets/SCI-FI UI Components/Common/Animation/Btn_Start.controller
+  uploadId: 620951

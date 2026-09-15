@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: 33cd2adf98f9f0e47af28f4a0c145208
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences: []
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 201162
+  packageName: SCI-FI UI Components
+  packageVersion: 2.1
+  assetPath: Assets/SCI-FI UI Components/Common/Scripts/SliderRunTo1.cs
+  uploadId: 620951
