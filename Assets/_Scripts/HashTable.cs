@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 
 public class HashTable<TKey, TValue>
 {
@@ -113,6 +114,84 @@ public class HashTable<TKey, TValue>
         Count = 0;
     }
 
+    public string GetDebugView()
+    {
+        if (_buckets == null)
+        {
+            return "HashTable is not initialized.";
+        }
+
+        StringBuilder builder = new StringBuilder();
+        builder.AppendLine($"Count: {Count} / Capacity: {Capacity} / LoadFactor: {LoadFactor:0.00}");
+
+        for (int i = 0; i < Capacity; i++)
+        {
+            builder.Append($"[{i}] ");
+
+            HashEntry<TKey, TValue> current = _buckets[i];
+
+            if (current == null)
+            {
+                builder.AppendLine("empty");
+                continue;
+            }
+
+            while (current != null)
+            {
+                builder.Append($"({FormatValue(current.Key)} : {FormatValue(current.Value)})");
+
+                if (current.Next != null)
+                {
+                    builder.Append(" -> ");
+                }
+
+                current = current.Next;
+            }
+
+            builder.AppendLine();
+        }
+
+        return builder.ToString();
+    }
+
+    public string[] GetDebugBuckets()
+    {
+        if (_buckets == null)
+        {
+            return new[] { "HashTable is not initialized." };
+        }
+
+        string[] debugBuckets = new string[Capacity];
+
+        for (int i = 0; i < Capacity; i++)
+        {
+            StringBuilder builder = new StringBuilder();
+            HashEntry<TKey, TValue> current = _buckets[i];
+
+            if (current == null)
+            {
+                debugBuckets[i] = "empty";
+                continue;
+            }
+
+            while (current != null)
+            {
+                builder.Append($"({FormatValue(current.Key)} : {FormatValue(current.Value)})");
+
+                if (current.Next != null)
+                {
+                    builder.Append(" -> ");
+                }
+
+                current = current.Next;
+            }
+
+            debugBuckets[i] = builder.ToString();
+        }
+
+        return debugBuckets;
+    }
+
     private int GetHash(TKey key)
     {
         if (key == null)
@@ -184,5 +263,10 @@ public class HashTable<TKey, TValue>
         }
 
         current.Next = entry;
+    }
+
+    private static string FormatValue<T>(T value)
+    {
+        return value == null ? "null" : value.ToString();
     }
 }
