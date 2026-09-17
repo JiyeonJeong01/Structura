@@ -1,11 +1,13 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public abstract class UIEntry<TData> : MonoBehaviour
 {
-    [SerializeField] private UIEntryState state = UIEntryState.Normal;
-
     public TData Data { get; private set; }
-    public UIEntryState State => state;
+    public UIEntryState State => _state;
+
+    [FormerlySerializedAs("state"), SerializeField] private UIEntryState _state = UIEntryState.Normal;
+
 
     public void Bind(TData data)
     {
@@ -15,7 +17,7 @@ public abstract class UIEntry<TData> : MonoBehaviour
 
     public virtual void SetState(UIEntryState newState)
     {
-        state = newState;
+        _state = newState;
     }
 
     protected abstract void OnBind(TData data);

@@ -4,11 +4,12 @@ using System.Text;
 
 public class HashTable<TKey, TValue>
 {
+    private const float RehashThreshold = 0.75f;
+
     public int Capacity { get; private set; }
     public int Count { get; private set; }
     public float LoadFactor => (float)Count / Capacity;
 
-    private const float RehashThreshold = 0.75f;
     private HashEntry<TKey, TValue>[] _buckets;
 
 
@@ -112,6 +113,20 @@ public class HashTable<TKey, TValue>
         }
 
         Count = 0;
+    }
+
+    // 버킷별 체인 순서를 UI에 전달한다. 목록만 복사하며 엔트리 객체는 원본을 참조한다.
+    public IReadOnlyList<IReadOnlyList<HashEntry<TKey, TValue>>> GetBuckets()
+    {
+        var result = new List<IReadOnlyList<HashEntry<TKey, TValue>>>(Capacity);
+        for (int i = 0; i < Capacity; i++)
+        {
+            var entries = new List<HashEntry<TKey, TValue>>();
+            for (var entry = _buckets[i]; entry != null; entry = entry.Next)
+                entries.Add(entry);
+            result.Add(entries);
+        }
+        return result;
     }
 
     public string GetDebugView()
