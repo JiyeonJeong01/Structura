@@ -6,6 +6,9 @@ using UnityEngine.UI;
 public class DequeSlotUIView : UIEntry<object>
 {
     public DequeSlotEffects Effects => GetComponent<DequeSlotEffects>();
+    public int LogicalIndex { get; private set; } = -1;
+    public int PhysicalOffset { get; private set; } = -1;
+    public bool IsOccupied => LogicalIndex >= 0;
 
     // 물리 slot 번호, 논리 index와 값 표시 UI
     [SerializeField] private Text _indexText;
@@ -26,25 +29,26 @@ public class DequeSlotUIView : UIEntry<object>
     protected override void OnBind(object data)
     {
         Effects.Cancel();
-        _valueText.text = HashValueParser.Format(data);
+        _valueText.text = ValueParser.Format(data);
     }
 
     // 별도 표시 데이터 객체를 만들지 않고, 행에서 계산한 슬롯 위치와 마커를 함께 반영한다.
-    public void Bind(int slotIndex, int logicalIndex, object value, bool isStart, bool isFinish)
+    public void Bind(int slotIndex, int physicalOffset, int logicalIndex, object value, bool isStart, bool isFinish)
     {
         base.Bind(value);
 
         // 0이나 빈 문자열도 유효 원소이므로 값 자체가 아닌 논리 index로 빈 칸을 판단한다.
-        bool occupied = logicalIndex >= 0;
-        _indexText.text = $"slot {slotIndex}" + (occupied ? $" / {logicalIndex}" : "");
-        if (!occupied) 
+        PhysicalOffset = physicalOffset;
+        LogicalIndex = logicalIndex;
+        _indexText.text = $"slot {slotIndex}" + (IsOccupied ? $" / {logicalIndex}" : "");
+        if (!IsOccupied) 
             _valueText.text = "empty";
 
         // 빈 deque는 같은 슬롯에 S와 F를 동시에 표시한다. finish의 값은 항상 비어 있다.
         _startText.gameObject.SetActive(isStart);
         _finishText.gameObject.SetActive(isFinish);
 
-        _background.color = occupied ? _occupiedColor : _emptyColor;
+        _background.color = IsOccupied ? _occupiedColor : _emptyColor;
         SetHighlight(false, false);
     }
 
@@ -64,5 +68,35 @@ public class DequeSlotUIView : UIEntry<object>
 
         if (changed || selected)
             Effects.Pulse(_background);
+    }
+
+    public DG.Tweening.Tween AnimateAppear()
+    {
+        return Effects.Appear(_background);
+    }
+
+    public DG.Tweening.Tween AnimatePulse()
+    {
+        return Effects.Pulse(_background);
+    }
+
+    public DG.Tweening.Tween AnimateDisappear()
+    {
+        return Effects.Disappear(_background);
+    }
+
+    public DG.Tweening.Tween AnimateShift(int direction)
+    {
+        return Effects.Shift(_background, direction);
+    }
+
+    public DG.Tweening.Tween AnimateShift(int direction, int order)
+    {
+        return Effects.Shift(_background, direction, order);
+    }
+
+    public void StopEffects()
+    {
+        Effects.Cancel();
     }
 }

@@ -99,7 +99,7 @@ public class HashTableController : MonoBehaviour
         bool found = _hashTable.Find(key, out object value);
         _tableView.Highlight(found ? key : null);
 
-        Report(found ? $"Found {HashValueParser.Format(key)} : {HashValueParser.Format(value)}" : "Key not found.");
+        Report(found ? $"Found {ValueParser.Format(key)} : {ValueParser.Format(value)}" : "Key not found.");
 
         if (found)
             PlayEffect(_tableView.AnimateEntry(key, false));
@@ -196,7 +196,7 @@ public class HashTableController : MonoBehaviour
     // 공통 파서를 사용하고 변환 실패는 예외 대신 입력 안내로 전달한다.
     private bool Parse(string text, ValueType type, string label, out object value)
     {
-        if (HashValueParser.TryParse(text, type, out value)) 
+        if (ValueParser.TryParse(text, type, out value)) 
             return true;
 
         Report($"{label}: enter a valid {type.ToString().ToLowerInvariant()} (decimal separator: .).", true);

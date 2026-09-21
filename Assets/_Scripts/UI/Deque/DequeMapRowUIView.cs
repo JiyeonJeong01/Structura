@@ -60,12 +60,44 @@ public class DequeMapRowUIView : MonoBehaviour
             bool occupied = index >= 0 && index < deque.Count;
 
             // 유효 범위 안의 값만 읽는다. finish나 삭제된 빈 슬롯은 역참조하지 않는다.
-            _slots[i].Bind(i, occupied ? index : -1, occupied ? deque[index] : null,
+            _slots[i].Bind(i, offset, occupied ? index : -1, occupied ? deque[index] : null,
                 mapIndex == start.Node && i == start.Curr,
                 mapIndex == finish.Node && i == finish.Curr);
 
             _slots[i].SetHighlight(offset >= changedStart && offset < changedStart + changedCount,
                 occupied && selectedIndex >= 0 && index == selectedIndex);
         }
+    }
+
+    public DequeSlotUIView FindLogicalSlot(int logicalIndex)
+    {
+        foreach (var slot in _slots)
+            if (slot.gameObject.activeInHierarchy && slot.LogicalIndex == logicalIndex)
+                return slot;
+
+        return null;
+    }
+
+    public DequeSlotUIView FindPhysicalSlot(int physicalOffset)
+    {
+        foreach (var slot in _slots)
+            if (slot.gameObject.activeInHierarchy && slot.PhysicalOffset == physicalOffset)
+                return slot;
+
+        return null;
+    }
+
+    public void StopEffects()
+    {
+        foreach (var slot in _slots)
+            if (slot != null)
+                slot.StopEffects();
+    }
+
+    public IEnumerable<DequeSlotUIView> ActiveSlots()
+    {
+        foreach (var slot in _slots)
+            if (slot.gameObject.activeInHierarchy)
+                yield return slot;
     }
 }

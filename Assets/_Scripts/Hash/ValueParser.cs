@@ -3,7 +3,7 @@ using System.Globalization;
 
 public enum ValueType { Int, Float, String }
 
-public static class HashValueParser
+public static class ValueParser
 {
     // 입력 문자열을 선택한 실제 타입으로 변환하며 실패 시 false를 반환한다.
     public static bool TryParse(string text, ValueType type, out object value)

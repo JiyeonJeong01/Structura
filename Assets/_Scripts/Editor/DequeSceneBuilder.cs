@@ -24,13 +24,20 @@ public static class DequeSceneBuilder
         var slot = BuildSlot();
         var row = BuildRow(slot);
 
-        // 반복 실행 시 DequeCanvas만 교체한다. 카메라와 기존 EventSystem은 재사용한다.
-        var oldRoot = GameObject.Find("DequeCanvas");
-        if (oldRoot != null) Object.DestroyImmediate(oldRoot);
-        var canvasObject = new GameObject("DequeCanvas", typeof(RectTransform), typeof(Canvas),
-            typeof(CanvasScaler), typeof(GraphicRaycaster));
-        canvasObject.GetComponent<Canvas>().renderMode = RenderMode.ScreenSpaceOverlay;
-        var scaler = canvasObject.GetComponent<CanvasScaler>();
+        var canvas = Object.FindFirstObjectByType<Canvas>();
+        if (canvas == null)
+        {
+            var canvasObject = new GameObject("Canvas", typeof(RectTransform), typeof(Canvas),
+                typeof(CanvasScaler), typeof(GraphicRaycaster));
+            canvas = canvasObject.GetComponent<Canvas>();
+        }
+
+        // 카메라, 조명, EventSystem은 유지하고 Canvas 내부 UI만 다시 생성한다.
+        for (int i = canvas.transform.childCount - 1; i >= 0; i--)
+            Object.DestroyImmediate(canvas.transform.GetChild(i).gameObject);
+
+        canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+        var scaler = canvas.GetComponent<CanvasScaler>();
         scaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
         scaler.referenceResolution = new Vector2(1600, 900);
         scaler.matchWidthOrHeight = 0.5f;
@@ -41,7 +48,7 @@ public static class DequeSceneBuilder
             events.GetComponent<InputSystemUIInputModule>().AssignDefaultActions();
         }
 
-        var background = Box("DequeUI", canvasObject.transform, new Color(0.035f, 0.06f, 0.10f));
+        var background = Box("DequeUI", canvas.transform, new Color(0.035f, 0.06f, 0.10f));
         Stretch(background.rectTransform);
         var controls = background.gameObject.AddComponent<DequeControls>();
         var view = background.gameObject.AddComponent<DequeUIView>();
@@ -102,19 +109,22 @@ public static class DequeSceneBuilder
         for (int i = 0; i < names.Length; i++)
             ActionButton(ends.transform, controls, names[i], fields[i], 394 + i * 214, 34, 198, i < 2 ? Accent : new Color(0.15f, 0.23f, 0.32f));
 
-        // Index Access의 두 입력란을 Set/Get과 InsertAt/RemoveAt이 함께 사용한다.
+        // Index Access는 deque[index] 조회 결과와 대입 값을 같은 입력칸에 보여준다.
         var access = Box("IndexAccess", parent, Panel);
         Place(access.rectTransform, 44, 212, 832, 94);
         var accessTitle = Label("Title", access.transform, "INDEX ACCESS  /  shared inputs for Cost Demo", 16);
         Place(accessTitle.rectTransform, 16, 4, 800, 28);
+        var prefix = Label("ExpressionPrefix", access.transform, "value = deque[", 18);
+        Place(prefix.rectTransform, 16, 45, 154, 28);
         var index = Input("IndexInput", access.transform, "Index");
-        var indexedValue = Input("IndexValueInput", access.transform, "Value for Set / InsertAt");
-        Place((RectTransform)index.transform, 16, 38, 120, 44);
-        Place((RectTransform)indexedValue.transform, 148, 38, 360, 44);
+        Place((RectTransform)index.transform, 170, 38, 96, 44);
+        var middle = Label("ExpressionMiddle", access.transform, "] =", 18);
+        Place(middle.rectTransform, 278, 45, 42, 28);
+        var indexedValue = Input("IndexValueInput", access.transform, "Value for Set / InsertAt, blank to Get");
+        Place((RectTransform)indexedValue.transform, 330, 38, 318, 44);
         Ref(controls, "_indexInput", index);
         Ref(controls, "_indexValueInput", indexedValue);
-        ActionButton(access.transform, controls, "Get", "_getButton", 522, 38, 140, Accent);
-        ActionButton(access.transform, controls, "Set", "_setButton", 676, 38, 140, Accent);
+        ActionButton(access.transform, controls, "Access", "_accessButton", 664, 38, 152, Accent);
 
         // 중간 조작의 이동 비용을 구분할 수 있도록 별도 색상의 Cost Demo 패널을 만든다.
         var cost = Box("CostDemo", parent, new Color(0.19f, 0.135f, 0.09f));
@@ -141,6 +151,7 @@ public static class DequeSceneBuilder
         var root = Box("DequeSlotUI", null, Panel);
         Place(root.rectTransform, 0, 0, 112, 96);
         Fixed(root.gameObject, 112, 96);
+        root.gameObject.AddComponent<CanvasGroup>();
         var outline = root.gameObject.AddComponent<Outline>();
         outline.effectDistance = new Vector2(2, -2);
         outline.enabled = false;

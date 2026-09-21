@@ -6,8 +6,10 @@ public class DequeControls : MonoBehaviour
 {
     public ValueType ValueType => (ValueType)_valueTypeDropdown.value;
     public string ValueInput => _valueInput.text;
-    public string IndexInput => _indexInput.text;
-    public string IndexValueInput => _indexValueInput.text;
+    public string GetAndRemoveAtInput => _getAndRemoveAtInput.text;
+    public string SetAndInsertAtInput => _setAndInsertAtInput.text;
+    public string SetAndInsertAtValueInput => _setAndInsertAtValueInput.text;
+    public bool HasSetValueInput => !string.IsNullOrWhiteSpace(_setAndInsertAtValueInput.text);
 
     // Setup 패널 UI
     [SerializeField] private GameObject _setupPanel;
@@ -18,8 +20,9 @@ public class DequeControls : MonoBehaviour
 
     // 기본 양끝 연산의 Value와 Index Access / Cost Demo가 공유하는 입력 UI
     [SerializeField] private InputField _valueInput;
-    [SerializeField] private InputField _indexInput;
-    [SerializeField] private InputField _indexValueInput;
+    [SerializeField] private InputField _getAndRemoveAtInput;
+    [SerializeField] private InputField _setAndInsertAtInput;
+    [SerializeField] private InputField _setAndInsertAtValueInput;
 
     // 세션 시작 및 기본 양끝 연산 Button UI
     [SerializeField] private Button _startButton;
@@ -34,6 +37,7 @@ public class DequeControls : MonoBehaviour
     [SerializeField] private Button _setButton;
     [SerializeField] private Button _insertAtButton;
     [SerializeField] private Button _removeAtButton;
+    [SerializeField] private Text _getRemoveAtText;
 
     // 선택 타입, 자료구조 통계, 조작 결과 텍스트 UI
     [SerializeField] private Text _typeText;
@@ -46,16 +50,21 @@ public class DequeControls : MonoBehaviour
     public void Connect(DequeController owner)
     {
         _controller = owner;
+
         _startButton.onClick.AddListener(owner.Initialize);
         _pushFrontButton.onClick.AddListener(owner.PushFront);
         _pushBackButton.onClick.AddListener(owner.PushBack);
         _popFrontButton.onClick.AddListener(owner.PopFront);
         _popBackButton.onClick.AddListener(owner.PopBack);
         _clearButton.onClick.AddListener(owner.Clear);
+
         _getButton.onClick.AddListener(owner.Get);
         _setButton.onClick.AddListener(owner.Set);
+
         _insertAtButton.onClick.AddListener(owner.InsertAt);
         _removeAtButton.onClick.AddListener(owner.RemoveAt);
+
+        _getAndRemoveAtInput.onValueChanged.AddListener(ClearIndexValueOnIndexChanged);
     }
 
     // 이 Controls에서 등록한 클릭 이벤트만 해제한다.
@@ -70,10 +79,20 @@ public class DequeControls : MonoBehaviour
         _popFrontButton.onClick.RemoveListener(_controller.PopFront);
         _popBackButton.onClick.RemoveListener(_controller.PopBack);
         _clearButton.onClick.RemoveListener(_controller.Clear);
+
         _getButton.onClick.RemoveListener(_controller.Get);
         _setButton.onClick.RemoveListener(_controller.Set);
+
         _insertAtButton.onClick.RemoveListener(_controller.InsertAt);
         _removeAtButton.onClick.RemoveListener(_controller.RemoveAt);
+
+        _getAndRemoveAtInput.onValueChanged.RemoveListener(ClearIndexValueOnIndexChanged);
+    }
+
+    // Get/RemoveAt 결과는 index 입력란이 아니라 결과 텍스트에 표시한다.
+    public void SetGetAndRemoveAtValue(string value)
+    {
+        _getRemoveAtText.text = value;
     }
 
     // 타입 선택 패널과 조작 영역의 입력 가능 상태를 반대로 전환한다.
@@ -89,18 +108,21 @@ public class DequeControls : MonoBehaviour
         ShowSetupPanel(false);
 
         _typeText.text = $"VALUE : {type.ToString().ToLowerInvariant()}";
-        _valueInput.text = _indexValueInput.text = string.Empty;
-        _indexInput.text = "0";
+        _valueInput.text = _setAndInsertAtValueInput.text = string.Empty;
+        _getAndRemoveAtInput.text = "0";
+        _getRemoveAtText.text = string.Empty;
+        _setAndInsertAtInput.text = "0";
 
         // index는 항상 정수다. 두 Value 입력란은 같은 타입 제한을 사용한다.
-        _indexInput.contentType = InputField.ContentType.IntegerNumber;
+        _getAndRemoveAtInput.contentType = InputField.ContentType.IntegerNumber;
+        _setAndInsertAtInput.contentType = InputField.ContentType.IntegerNumber;
 
         // 타입 결정
         var contentType = type == ValueType.Int ? 
             InputField.ContentType.IntegerNumber
             : type == ValueType.Float ? InputField.ContentType.DecimalNumber : InputField.ContentType.Standard;
 
-        _valueInput.contentType = _indexValueInput.contentType = contentType;
+        _valueInput.contentType = _setAndInsertAtValueInput.contentType = contentType;
         _valueInput.Select();
         _valueInput.ActivateInputField();
     }
@@ -117,4 +139,21 @@ public class DequeControls : MonoBehaviour
         _feedbackText.text = message;
         _feedbackText.color = invalid ? new Color(1f, 0.65f, 0.4f) : new Color(0.55f, 0.87f, 0.81f);
     }
+
+    public void SetBusy(bool busy)
+    {
+        _operations.interactable = !busy;
+        _operations.blocksRaycasts = !busy;
+    }
+
+    public void ClearGetAndRemoveAtValue()
+    {
+        _getRemoveAtText.text = string.Empty;
+    }
+
+    private void ClearIndexValueOnIndexChanged(string _)
+    {
+        ClearGetAndRemoveAtValue();
+    }
+
 }

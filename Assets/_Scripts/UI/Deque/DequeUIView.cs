@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -51,8 +52,109 @@ public class DequeUIView : MonoBehaviour
         string value = finish 
             ? "past-the-end (no value)" : 
             deque.Count == 0 
-                ? "empty (no value)" : HashValueParser.Format(deque[0]);
+                ? "empty (no value)" : ValueParser.Format(deque[0]);
 
         return $"Node   {iterator.Node}\nCurr    {iterator.Curr}\nFirst    {iterator.First}\nLast    {iterator.Last} (exclusive)\n\nmap[{iterator.Node}][{iterator.Curr}]\n{value}";
+    }
+
+    public Tween AnimateInserted(int logicalIndex)
+    {
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_mapRoot);
+
+        var slot = FindLogicalSlot(logicalIndex);
+        return slot == null ? null : slot.AnimateAppear();
+    }
+
+    public Tween AnimateSlotPulse(int logicalIndex)
+    {
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_mapRoot);
+
+        var slot = FindLogicalSlot(logicalIndex);
+        return slot == null ? null : slot.AnimatePulse();
+    }
+
+    public Tween AnimatePhysicalDisappear(int physicalOffset)
+    {
+        var slot = FindPhysicalSlot(physicalOffset);
+        return slot == null ? null : slot.AnimateDisappear();
+    }
+
+    public Tween AnimateLogicalShift(int firstIndex, int count, int direction)
+    {
+        Canvas.ForceUpdateCanvases();
+        LayoutRebuilder.ForceRebuildLayoutImmediate(_mapRoot);
+
+        Sequence sequence = null;
+        bool movesRight = direction > 0;
+        for (int step = 0; step < count; step++)
+        {
+            int indexOffset = movesRight ? count - 1 - step : step;
+            var slot = FindLogicalSlot(firstIndex + indexOffset);
+            if (slot == null)
+                continue;
+
+            if (sequence == null)
+                sequence = DOTween.Sequence().SetUpdate(true);
+
+            sequence.Insert(step * 0.075f, slot.AnimateShift(direction, step));
+        }
+
+        return sequence;
+    }
+
+    public Tween AnimateClear()
+    {
+        Sequence sequence = null;
+        foreach (var row in _rows)
+        {
+            if (!row.gameObject.activeInHierarchy)
+                continue;
+
+            foreach (var slot in row.ActiveSlots())
+            {
+                if (!slot.IsOccupied)
+                    continue;
+
+                if (sequence == null)
+                    sequence = DOTween.Sequence().SetUpdate(true);
+
+                sequence.Join(slot.AnimateDisappear());
+            }
+        }
+
+        return sequence;
+    }
+
+    public void StopEffects()
+    {
+        foreach (var row in _rows)
+            if (row != null)
+                row.StopEffects();
+    }
+
+    private DequeSlotUIView FindLogicalSlot(int logicalIndex)
+    {
+        foreach (var row in _rows)
+        {
+            var slot = row.FindLogicalSlot(logicalIndex);
+            if (slot != null)
+                return slot;
+        }
+
+        return null;
+    }
+
+    private DequeSlotUIView FindPhysicalSlot(int physicalOffset)
+    {
+        foreach (var row in _rows)
+        {
+            var slot = row.FindPhysicalSlot(physicalOffset);
+            if (slot != null)
+                return slot;
+        }
+
+        return null;
     }
 }
