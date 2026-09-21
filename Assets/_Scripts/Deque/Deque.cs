@@ -60,9 +60,6 @@ public class Deque<T>
 
     public void PushFront(T value)
     {
-        if (_start == null)
-            throw new ArgumentNullException();
-
         // start 이동 후 원소 저장
         MoveStartPrev();
         _map[_start.Node][_start.Curr] = value;
@@ -71,9 +68,6 @@ public class Deque<T>
 
     public void PushBack(T value)
     {
-        if (_finish == null)
-            throw new ArgumentNullException();
-
         // 원소 저장 후 finish 이동
         EnsureBlock(_finish.Node);
         _map[_finish.Node][_finish.Curr] = value;
@@ -103,9 +97,6 @@ public class Deque<T>
 
     public bool PopBack(out T value)
     {
-        if (_finish == null)
-            throw new ArgumentNullException();
-
         if (!TryGetBack(out value))
             return false;
 
@@ -123,9 +114,6 @@ public class Deque<T>
 
     public bool TryGetFront(out T value)
     {
-        if (_start == null)
-            throw new ArgumentNullException();
-
         value = default;
 
         if (IsEmpty())
@@ -138,9 +126,6 @@ public class Deque<T>
 
     public bool TryGetBack(out T value)
     {
-        if (_finish == null)
-            throw new ArgumentNullException();
-
         value = default;
 
         if (IsEmpty())
@@ -160,19 +145,95 @@ public class Deque<T>
         return true;
     }
 
+    public T this[int index]
+    {
+        get
+        {
+            int node = 0, localIndex = 0;
+            if (CalcIndex(index, out node, out localIndex))
+                return _map[node][localIndex];
+
+            throw new IndexOutOfRangeException($"Deque Out Of Range! index : {index}");
+        }
+
+        set
+        {
+            int node = 0, localIndex = 0;
+            if (CalcIndex(index, out node, out localIndex))
+            {
+                _map[node][localIndex] = value;
+                return;
+            }
+
+            throw new IndexOutOfRangeException($"Deque Out Of Range! index : {index}");
+        }
+    }
+
+    public bool InsertAt(int index, T value)
+    {
+        if (index < 0 || index > Count)
+            return false;
+
+        // 맨 앞/뒤에 삽입
+        if (index == 0)
+        {
+            PushFront(value);
+            return true;
+        }
+
+        if (index == Count)
+        {
+            PushBack(value);
+            return true;
+        }
+
+        // index 이후 원소들을 뒤로 한 칸식 밀기
+        PushBack(this[Count - 1]);
+
+        for (int i = Count - 2; i > index; --i)
+            this[i] = this[i - 1];
+
+        this[index] = value;
+        return true;
+    }
+
+    public bool RemoveAt(int index, out T value)
+    {
+        value = default;
+
+        if (index < 0 || index >= Count)
+            return false;
+
+        // 맨 앞/뒤에서 삭제 
+        if (index == 0)
+            return PopFront(out value);
+
+        if (index == Count - 1)
+            return PopBack(out value);
+
+        value = this[index];
+
+        // index + 1 번째 원소부터 앞으로 한 칸씩 당겨오기
+        for (int i = index; i < Count - 1; ++i)
+            this[i] = this[i + 1];
+
+        PopBack(out _);
+        return true;
+    }
+
     public void Clear()
     {
         Initialize(MapSize, BlockSize);
     }
 
-    public string GetDebugView()
-    {
-        throw new NotImplementedException();
-    }
-
     public bool IsEmpty()
     {
         return Count == 0;
+    }
+
+    public string GetDebugView()
+    {
+        throw new NotImplementedException();
     }
 
     private void MoveStartPrev()
@@ -285,5 +346,21 @@ public class Deque<T>
     {
         if (_map[node] == null)
             _map[node] = new T[BlockSize];
+    }
+
+    private bool CalcIndex(int index, out int node, out int localIdx)
+    {
+        node = localIdx = 0;
+
+        if (index < 0 || index >= Count)
+            return false;
+
+        // index : _start.Cur 에서 몇 칸 뒤로 갈지
+        // offset : _start.First 에서 몇 칸 뒤로 갈지
+        int offset = _start.Curr + index;
+        node = _start.Node + offset / BlockSize;
+        localIdx = offset % BlockSize;
+
+        return node >= 0 && node < MapSize && _map[node] != null;
     }
 }
