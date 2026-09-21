@@ -14,34 +14,58 @@ public class DequeMapRowUIView : MonoBehaviour
     private readonly List<DequeSlotUIView> _slots = new List<DequeSlotUIView>();
 
     // block 할당 상태에 맞춰 슬롯을 확보하고 변경 범위와 조회 index를 각 슬롯에 전달한다.
-    public void Refresh(Deque<object>.MapRowSnapshot row, Deque<object>.Snapshot snapshot,
-        int changedStart, int changedCount, int selectedIndex)
+    public void Refresh(Deque<object> deque, 
+        int mapIndex, 
+        DequeIterator start, 
+        DequeIterator finish,
+        int changedStart, 
+        int changedCount, 
+        int selectedIndex)
     {
-        // null 참조와 할당됐지만 비어 있는 블록을 명확히 구분한다.
-        _mapText.text = $"[{row.MapIndex}] -> " + (row.HasBlock ? "block" : "[] null");
-        if (!row.HasBlock)
+        bool hasBlock = deque.HasBlock(mapIndex);
+        int slotCount = hasBlock ? deque.BlockSize : 0;
+
+        // 해당 map 행에 블록이 할당되어 있는지 퓨시한다.
+        _mapText.text = $"[{mapIndex}] -> " + (hasBlock ? "block" : "[] null");
+
+        // map 슬롯 텍스트에 이터레이너 표시
+        if (!hasBlock)
         {
-            // 슬롯이 없는 행은 iterator 위치를 map 참조 텍스트에 표시한다.
-            if (snapshot.Start.Node == row.MapIndex) _mapText.text += $"\nS @ {snapshot.Start.Curr}";
-            if (snapshot.Finish.Node == row.MapIndex) _mapText.text += $"\nF @ {snapshot.Finish.Curr}";
+            if (start.Node == mapIndex) 
+                _mapText.text += $"\nS → {start.Curr}";
+
+            if (finish.Node == mapIndex) 
+                _mapText.text += $"\nF → {finish.Curr}";
         }
-        // null block은 Slots가 비어 있으므로 슬롯을 새로 만들지 않는다.
-        while (_slots.Count < row.Slots.Count)
+
+        // null block은 슬롯 개수가 0이므로 슬롯을 새로 만들지 않는다.
+        while (_slots.Count < slotCount)
         {
             var slot = Instantiate(_slotPrefab, _slotRoot);
             slot.name = "Slot " + _slots.Count;
             _slots.Add(slot);
         }
+
+        int startOffset = start.Node * deque.BlockSize + start.Curr;
         for (int i = 0; i < _slots.Count; i++)
         {
             // 남는 슬롯은 Layout Group에서도 빠지도록 비활성화한다.
-            _slots[i].gameObject.SetActive(i < row.Slots.Count);
-            if (i >= row.Slots.Count) continue;
+            _slots[i].gameObject.SetActive(i < slotCount);
+            if (i >= slotCount)
+                continue;
+
             // 변경은 물리 슬롯 범위로, 조회는 논리 index로 판정한다. 삭제된 빈 칸도 변경에 포함된다.
-            int offset = row.MapIndex * snapshot.BlockSize + i;
-            _slots[i].Bind(row.Slots[i]);
+            int offset = mapIndex * deque.BlockSize + i;
+            int index = offset - startOffset;
+            bool occupied = index >= 0 && index < deque.Count;
+
+            // 유효 범위 안의 값만 읽는다. finish나 삭제된 빈 슬롯은 역참조하지 않는다.
+            _slots[i].Bind(i, occupied ? index : -1, occupied ? deque[index] : null,
+                mapIndex == start.Node && i == start.Curr,
+                mapIndex == finish.Node && i == finish.Curr);
+
             _slots[i].SetHighlight(offset >= changedStart && offset < changedStart + changedCount,
-                selectedIndex >= 0 && row.Slots[i].LogicalIndex == selectedIndex);
+                occupied && selectedIndex >= 0 && index == selectedIndex);
         }
     }
 }

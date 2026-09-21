@@ -12,12 +12,15 @@ public class DequeControls : MonoBehaviour
     // Setup 패널 UI
     [SerializeField] private GameObject _setupPanel;
     [SerializeField] private Dropdown _valueTypeDropdown;
+
     // 타입 선택 전에는 모든 조작 영역의 입력을 차단한다.
     [SerializeField] private CanvasGroup _operations;
+
     // 기본 양끝 연산의 Value와 Index Access / Cost Demo가 공유하는 입력 UI
     [SerializeField] private InputField _valueInput;
     [SerializeField] private InputField _indexInput;
     [SerializeField] private InputField _indexValueInput;
+
     // 세션 시작 및 기본 양끝 연산 Button UI
     [SerializeField] private Button _startButton;
     [SerializeField] private Button _pushFrontButton;
@@ -25,11 +28,13 @@ public class DequeControls : MonoBehaviour
     [SerializeField] private Button _popFrontButton;
     [SerializeField] private Button _popBackButton;
     [SerializeField] private Button _clearButton;
+
     // Index Access와 Cost Demo Button UI
     [SerializeField] private Button _getButton;
     [SerializeField] private Button _setButton;
     [SerializeField] private Button _insertAtButton;
     [SerializeField] private Button _removeAtButton;
+
     // 선택 타입, 자료구조 통계, 조작 결과 텍스트 UI
     [SerializeField] private Text _typeText;
     [SerializeField] private Text _statsText;
@@ -82,13 +87,19 @@ public class DequeControls : MonoBehaviour
     public void StartShowDeque(ValueType type)
     {
         ShowSetupPanel(false);
-        _typeText.text = $"VALUE / {type.ToString().ToLowerInvariant()}";
+
+        _typeText.text = $"VALUE : {type.ToString().ToLowerInvariant()}";
         _valueInput.text = _indexValueInput.text = string.Empty;
         _indexInput.text = "0";
+
         // index는 항상 정수다. 두 Value 입력란은 같은 타입 제한을 사용한다.
         _indexInput.contentType = InputField.ContentType.IntegerNumber;
-        var contentType = type == ValueType.Int ? InputField.ContentType.IntegerNumber
+
+        // 타입 결정
+        var contentType = type == ValueType.Int ? 
+            InputField.ContentType.IntegerNumber
             : type == ValueType.Float ? InputField.ContentType.DecimalNumber : InputField.ContentType.Standard;
+
         _valueInput.contentType = _indexValueInput.contentType = contentType;
         _valueInput.Select();
         _valueInput.ActivateInputField();
