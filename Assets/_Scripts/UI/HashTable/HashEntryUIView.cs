@@ -17,8 +17,8 @@ public class HashEntryUIView : UIEntry<HashEntry<object, object>>
     // 연결된 데이터의 키, 값, 다음 포인터를 표시하고 이전 강조 상태를 해제한다.
     protected override void OnBind(HashEntry<object, object> data)
     {
-        _keyText.text = HashValueParser.Format(data.Key);
-        _valueText.text = HashValueParser.Format(data.Value);
+        _keyText.text = ValueParser.Format(data.Key);
+        _valueText.text = ValueParser.Format(data.Value);
         _nextText.text = data.Next == null ? "-> null" : "->";
 
         SetState(UIEntryState.Normal);
