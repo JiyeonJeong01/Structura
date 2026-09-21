@@ -106,7 +106,7 @@ public static class HashUIFactory
         return input;
     }
 
-    // HashValueType 순서와 동일한 타입 선택 드롭다운을 생성한다.
+    // ValueType 순서와 동일한 타입 선택 드롭다운을 생성한다.
     public static Dropdown Types(string name, Transform parent)
     {
         var dropdown = DefaultControl<Dropdown>(DefaultControls.CreateDropdown(new DefaultControls.Resources()), name, parent);

@@ -1,27 +1,27 @@
 using System;
 using System.Globalization;
 
-public enum HashValueType { Int, Float, String }
+public enum ValueType { Int, Float, String }
 
 public static class HashValueParser
 {
     // 입력 문자열을 선택한 실제 타입으로 변환하며 실패 시 false를 반환한다.
-    public static bool TryParse(string text, HashValueType type, out object value)
+    public static bool TryParse(string text, ValueType type, out object value)
     {
         value = null;
         switch (type)
         {
-            case HashValueType.Int:
+            case ValueType.Int:
                 if (int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out int integer))
                     value = integer;
                 break;
-            case HashValueType.Float:
+            case ValueType.Float:
                 // 입력 필드가 허용하는 소수 구분자를 통일하고 NaN과 무한대는 거부한다.
                 if (float.TryParse(text?.Replace(',', '.'), NumberStyles.Float, CultureInfo.InvariantCulture, out float number)
                     && !float.IsNaN(number) && !float.IsInfinity(number))
                     value = number;
                 break;
-            case HashValueType.String:
+            case ValueType.String:
                 value = text ?? string.Empty;
                 break;
         }

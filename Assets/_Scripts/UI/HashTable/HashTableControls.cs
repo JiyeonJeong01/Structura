@@ -9,8 +9,8 @@ using UnityEngine.UI;
 /// </summary>
 public class HashTableControls : MonoBehaviour
 {
-    public HashValueType KeyType => (HashValueType)_keyTypeDropdown.value;
-    public HashValueType ValueType => (HashValueType)_valueTypeDropdown.value;
+    public ValueType KeyType => (ValueType)_keyTypeDropdown.value;
+    public ValueType ValueType => (ValueType)_valueTypeDropdown.value;
     public string KeyInput => _keyInput.text;
     public string ValueInput => _valueInput.text;
     
@@ -92,7 +92,7 @@ public class HashTableControls : MonoBehaviour
     }
 
     // 선택한 타입을 표시하고 해당 타입의 입력 규칙으로 조작 화면을 준비한다.
-    public void StartShowTable(HashValueType keyType, HashValueType valueType)
+    public void StartShowTable(ValueType keyType, ValueType valueType)
     {
         ShowSetupPanel(false);
 
@@ -224,10 +224,10 @@ public class HashTableControls : MonoBehaviour
     private void Clear() { SelectAction(_clearButton); _controller.Clear(); }
 
     // Unity의 기본 검증을 사용해 숫자 입력란에서 허용하지 않는 문자를 무시한다.
-    private static void ConfigureInput(InputField input, HashValueType type)
+    private static void ConfigureInput(InputField input, ValueType type)
     {
-        input.contentType = type == HashValueType.Int ? InputField.ContentType.IntegerNumber
-            : type == HashValueType.Float ? InputField.ContentType.DecimalNumber
+        input.contentType = type == ValueType.Int ? InputField.ContentType.IntegerNumber
+            : type == ValueType.Float ? InputField.ContentType.DecimalNumber
             : InputField.ContentType.Standard;
     }
 

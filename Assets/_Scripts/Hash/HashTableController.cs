@@ -26,8 +26,8 @@ public class HashTableController : MonoBehaviour
 
     // 선택한 타입으로 파싱하여 저장한다. object로 보관해도 숫자의 비교와 해시 동작은 유지된다.
     private readonly HashTable<object, object> _hashTable = new HashTable<object, object>();
-    private HashValueType _keyType;
-    private HashValueType _valueType;
+    private ValueType _keyType;
+    private ValueType _valueType;
 
     private Tween _activeEffect; // 완료 대기와 중단 처리를 담당하는 현재 조작의 연출이다.
 
@@ -194,7 +194,7 @@ public class HashTableController : MonoBehaviour
     }
 
     // 공통 파서를 사용하고 변환 실패는 예외 대신 입력 안내로 전달한다.
-    private bool Parse(string text, HashValueType type, string label, out object value)
+    private bool Parse(string text, ValueType type, string label, out object value)
     {
         if (HashValueParser.TryParse(text, type, out value)) 
             return true;
