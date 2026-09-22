@@ -10,6 +10,7 @@ public class StackQueueUIView : MonoBehaviour
     // Stack과 Queue에 각각 배치된 고정 길이 슬롯과 끝 위치 라벨
     [SerializeField] private StackQueueSlotUIView[] _stackSlots;
     [SerializeField] private StackQueueSlotUIView[] _queueSlots;
+
     [SerializeField] private Text _stackTopText;
     [SerializeField] private Text _queueFrontText;
     [SerializeField] private Text _queueRearText;

@@ -25,37 +25,42 @@ public class StackQueueControls : MonoBehaviour
     [SerializeField] private Text _feedbackText;
 
     private StackQueueController _controller;
-    private EventTrigger _valueInputClickTrigger;
+    private EventTrigger _valueInputEventTrigger;
     private EventTrigger.Entry _retainedValueClickEntry;
     private bool _replaceValueOnNextEdit;
 
-    // 버튼의 데이터 변경 요청을 Controller로만 전달한다.
     public void Connect(StackQueueController owner)
     {
+        // 버튼의 데이터 변경 요청을 Controller로만 전달한다.
         _controller = owner;
+
+        // 이벤트 등록
         _startButton.onClick.AddListener(_controller.Initialize);
         _pushEnqueueButton.onClick.AddListener(_controller.PushAndEnqueue);
         _popDequeueButton.onClick.AddListener(_controller.PopAndDequeue);
+
         ConnectRetainedValueClick();
     }
 
-    // 이 Controls가 등록한 클릭 리스너만 해제한다.
     private void OnDestroy()
     {
         if (_controller == null)
             return;
 
+        // 이 Controls가 등록한 클릭 리스너만 해제한다.
         _startButton.onClick.RemoveListener(_controller.Initialize);
         _pushEnqueueButton.onClick.RemoveListener(_controller.PushAndEnqueue);
         _popDequeueButton.onClick.RemoveListener(_controller.PopAndDequeue);
-        if (_valueInputClickTrigger != null && _retainedValueClickEntry != null)
-            _valueInputClickTrigger.triggers.Remove(_retainedValueClickEntry);
+
+        if (_valueInputEventTrigger != null && _retainedValueClickEntry != null)
+            _valueInputEventTrigger.triggers.Remove(_retainedValueClickEntry);
     }
 
     // 타입 선택이 끝날 때까지 컨테이너 조작 영역의 입력을 막는다.
     public void ShowSetupPanel(bool show)
     {
         _setupPanel.SetActive(show);
+
         _operations.interactable = !show;
         _operations.blocksRaycasts = !show;
     }
@@ -65,8 +70,9 @@ public class StackQueueControls : MonoBehaviour
     {
         ShowSetupPanel(false);
         _typeText.text = $"VALUE TYPE  /  {type.ToString().ToUpperInvariant()}";
-        _valueInput.text = string.Empty;
         _replaceValueOnNextEdit = false;
+
+        _valueInput.text = string.Empty;
         _valueInput.contentType = type == ValueType.Int
             ? InputField.ContentType.IntegerNumber
             : type == ValueType.Float
@@ -98,24 +104,25 @@ public class StackQueueControls : MonoBehaviour
     // Legacy InputField에는 onSelect 이벤트가 없으므로 클릭 이벤트를 직접 연결한다.
     private void ConnectRetainedValueClick()
     {
-        _valueInputClickTrigger = _valueInput.GetComponent<EventTrigger>();
-        if (_valueInputClickTrigger == null)
-            _valueInputClickTrigger = _valueInput.gameObject.AddComponent<EventTrigger>();
+        _valueInputEventTrigger = _valueInput.GetComponent<EventTrigger>();
+        if (_valueInputEventTrigger == null)
+            _valueInputEventTrigger = _valueInput.gameObject.AddComponent<EventTrigger>();
 
         _retainedValueClickEntry = new EventTrigger.Entry
         {
             eventID = EventTriggerType.PointerClick
         };
         _retainedValueClickEntry.callback.AddListener(PrepareRetainedValueForEdit);
-        _valueInputClickTrigger.triggers.Add(_retainedValueClickEntry);
+        _valueInputEventTrigger.triggers.Add(_retainedValueClickEntry);
     }
 
-    // 보존된 값을 다시 편집하려고 클릭한 경우 전체 선택해 첫 글자 입력으로 교체되게 한다.
+    // 보존된 값을 다시 편집하려고 클릭한 경우 전체 선택해 첫 글자 입력 시 바로 교체되게 한다.
     private void PrepareRetainedValueForEdit(BaseEventData _)
     {
         if (!_replaceValueOnNextEdit)
             return;
 
+        // 입력 값 전체 선택
         _valueInput.ActivateInputField();
         _valueInput.selectionAnchorPosition = 0;
         _valueInput.selectionFocusPosition = _valueInput.text.Length;

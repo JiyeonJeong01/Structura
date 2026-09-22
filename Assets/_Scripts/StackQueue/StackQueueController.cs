@@ -18,6 +18,8 @@ public class StackQueueController : MonoBehaviour
     private readonly Stack<object> _stack = new Stack<object>();
     private readonly Queue<object> _queue = new Queue<object>();
     private ValueType _valueType;
+
+    // 한 번에 하나의 Tween 만 실행.
     private Tween _activeEffect;
 
     // 씬 Builder가 연결한 Controls와 빈 두 컨테이너를 시작 전에 준비한다.
@@ -25,6 +27,7 @@ public class StackQueueController : MonoBehaviour
     {
         _stack.Initialize();
         _queue.Initialize();
+
         _controls.Connect(this);
         _controls.ShowSetupPanel(true);
     }
@@ -39,7 +42,9 @@ public class StackQueueController : MonoBehaviour
         _valueType = _controls.ValueType;
         _stack.Initialize();
         _queue.Initialize();
+
         _controls.ShowContainers(_valueType);
+
         RefreshView();
         Report("Ready. Push / Enqueue inserts the same value into both containers.");
     }
@@ -59,13 +64,23 @@ public class StackQueueController : MonoBehaviour
 
         if (!ValueParser.TryParse(_controls.ValueInput, _valueType, out object value))
         {
-            Report($"Value: enter a valid {_valueType.ToString().ToLowerInvariant()} (decimal separator: .).", true);
+            string message = $"Value: enter a valid {_valueType.ToString().ToLowerInvariant()}.";
+
+            // valueType이 float인 경우 
+            if (_valueType == ValueType.Float)
+                message += " Use '.' or ',' for decimals.";
+
+            Report(message, true);
+
             return;
         }
 
         _stack.Push(value);
         _queue.Enqueue(value);
+
+        // inputfield 값 보존
         _controls.RetainValueInput();
+
         RefreshView();
         Report($"Inserted {ValueParser.Format(value)}. Stack top and Queue rear received the value.");
         PlayEffect(_view.AnimateInserted(Count - 1));
@@ -140,12 +155,13 @@ public class StackQueueController : MonoBehaviour
         StopAllCoroutines();
         if (_activeEffect != null && _activeEffect.IsActive())
             _activeEffect.Kill();
-
         _activeEffect = null;
+
         if (_view != null)
             _view.StopEffects();
-        IsBusy = false;
+
         if (_controls != null)
             _controls.SetBusy(false);
+        IsBusy = false;
     }
 }
