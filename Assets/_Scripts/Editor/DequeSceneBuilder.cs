@@ -16,6 +16,8 @@ public static class DequeSceneBuilder
     [MenuItem("Structura/Build Deque UI")]
     public static void Build()
     {
+        return;
+
         if (Application.isPlaying) throw new System.InvalidOperationException("Stop Play Mode first.");
         var scene = EditorSceneManager.GetActiveScene();
         if (scene.path != ScenePath) throw new System.InvalidOperationException("Open DequeScene first.");

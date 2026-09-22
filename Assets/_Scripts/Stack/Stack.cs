@@ -29,6 +29,12 @@ public class Stack<T>
         return _deque.TryGetBack(out value);
     }
 
+    // 시각화는 원소를 변경하지 않고 바닥부터 top까지의 현재 순서만 읽는다.
+    public T GetValueAt(int index)
+    {
+        return _deque[index];
+    }
+
     public bool IsEmpty()
     {
         return _deque.IsEmpty();
