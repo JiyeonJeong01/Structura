@@ -22,7 +22,9 @@ public static class ValueParser
                     value = number;
                 break;
             case ValueType.String:
-                value = text ?? string.Empty;
+                // 빈 문자열과 공백만 있는 문자열은 다른 타입의 미입력과 같은 오류로 처리한다.
+                if (!string.IsNullOrWhiteSpace(text))
+                    value = text;
                 break;
         }
         return value != null;
