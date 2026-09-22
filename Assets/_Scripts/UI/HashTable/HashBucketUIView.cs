@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using TMPro;
 using DG.Tweening;
 
 public class HashBucketUIView : UIContainer<HashEntry<object, object>>
@@ -10,7 +11,7 @@ public class HashBucketUIView : UIContainer<HashEntry<object, object>>
     public RectTransform EffectRoot => _effectRoot;
 
     [SerializeField] private int _bucketIndex;
-    [FormerlySerializedAs("headText"), SerializeField] private Text _headText;
+    [FormerlySerializedAs("headText"), SerializeField] private TMP_Text _headText;
     [SerializeField] private RectTransform _entryLayoutRoot;    // 고정 크기의 슬롯을 왼쪽부터 정렬한다.
     [SerializeField] private RectTransform _effectRoot;         // 애니메이션 등 효과 넣을 때 루트
     [SerializeField] private RectTransform _slotTemplate;       // 부족한 슬롯을 복제하는 비활성 원본이다.

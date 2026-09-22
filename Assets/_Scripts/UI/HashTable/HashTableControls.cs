@@ -3,6 +3,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using TMPro;
 
 /// <summary>
 /// 버튼 연결, 키보드 탐색, 타입 선택, 숫자 입력 제한, 연출 중 버튼 잠금
@@ -16,14 +17,14 @@ public class HashTableControls : MonoBehaviour
     
     // Setup 패널 UI
     [SerializeField] private GameObject _setupPanel;
-    [SerializeField] private Dropdown _keyTypeDropdown;
-    [SerializeField] private Dropdown _valueTypeDropdown;
+    [SerializeField] private TMP_Dropdown _keyTypeDropdown;
+    [SerializeField] private TMP_Dropdown _valueTypeDropdown;
 
     [SerializeField] private CanvasGroup _operations; // 타입 선택 전에는 조작 영역의 입력을 차단한다.
 
     // 입력 Input Field UI
-    [SerializeField] private InputField _keyInput;
-    [SerializeField] private InputField _valueInput;
+    [SerializeField] private TMP_InputField _keyInput;
+    [SerializeField] private TMP_InputField _valueInput;
 
     // 조작 Button UI
     [SerializeField] private Button _startButton;
@@ -33,9 +34,9 @@ public class HashTableControls : MonoBehaviour
     [SerializeField] private Button _clearButton;
 
     // 조작 결과 텍스트 UI
-    [SerializeField] private Text _typeText;
-    [SerializeField] private Text _statsText;
-    [SerializeField] private Text _feedbackText;
+    [SerializeField] private TMP_Text _typeText;
+    [SerializeField] private TMP_Text _statsText;
+    [SerializeField] private TMP_Text _feedbackText;
 
     private HashTableController _controller;
     private Button[] _actionButtons;
@@ -151,7 +152,7 @@ public class HashTableControls : MonoBehaviour
             _activeButton.onClick.Invoke();
             // Enter로 편집이 종료된 입력란을 다시 활성화해 이어서 입력할 수 있게 한다.
             var selected = eventSystem.currentSelectedGameObject;
-            if (selected != null && selected.TryGetComponent<InputField>(out var input))
+            if (selected != null && selected.TryGetComponent<TMP_InputField>(out var input))
                 input.ActivateInputField();
         }
     }
@@ -204,7 +205,7 @@ public class HashTableControls : MonoBehaviour
     private static void Focus(Selectable target)
     {
         target.Select();
-        if (target is InputField input)
+        if (target is TMP_InputField input)
             input.ActivateInputField();
     }
 
@@ -224,11 +225,11 @@ public class HashTableControls : MonoBehaviour
     private void Clear() { SelectAction(_clearButton); _controller.Clear(); }
 
     // Unity의 기본 검증을 사용해 숫자 입력란에서 허용하지 않는 문자를 무시한다.
-    private static void ConfigureInput(InputField input, ValueType type)
+    private static void ConfigureInput(TMP_InputField input, ValueType type)
     {
-        input.contentType = type == ValueType.Int ? InputField.ContentType.IntegerNumber
-            : type == ValueType.Float ? InputField.ContentType.DecimalNumber
-            : InputField.ContentType.Standard;
+        input.contentType = type == ValueType.Int ? TMP_InputField.ContentType.IntegerNumber
+            : type == ValueType.Float ? TMP_InputField.ContentType.DecimalNumber
+            : TMP_InputField.ContentType.Standard;
     }
 
     // 연출 도중에 들어온 다음 조작을 무시하기 위해.
