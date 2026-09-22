@@ -1,6 +1,6 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using TMPro;
 
 /// <summary>타입 선택과 공통 입력·버튼의 UI 상태를 관리한다.</summary>
 public class StackQueueControls : MonoBehaviour
@@ -10,23 +10,21 @@ public class StackQueueControls : MonoBehaviour
 
     // 시작 전 타입을 선택하는 오버레이 UI
     [SerializeField] private GameObject _setupPanel;
-    [SerializeField] private Dropdown _valueTypeDropdown;
+    [SerializeField] private TMP_Dropdown _valueTypeDropdown;
 
     // 두 컨테이너에 공통으로 적용할 조작 UI
     [SerializeField] private CanvasGroup _operations;
-    [SerializeField] private InputField _valueInput;
+    [SerializeField] private TMP_InputField _valueInput;
     [SerializeField] private Button _startButton;
     [SerializeField] private Button _pushEnqueueButton;
     [SerializeField] private Button _popDequeueButton;
 
     // 현재 타입, 용량, 결과 안내 UI
-    [SerializeField] private Text _typeText;
-    [SerializeField] private Text _statsText;
-    [SerializeField] private Text _feedbackText;
+    [SerializeField] private TMP_Text _typeText;
+    [SerializeField] private TMP_Text _statsText;
+    [SerializeField] private TMP_Text _feedbackText;
 
     private StackQueueController _controller;
-    private EventTrigger _valueInputEventTrigger;
-    private EventTrigger.Entry _retainedValueClickEntry;
     private bool _replaceValueOnNextEdit;
 
     public void Connect(StackQueueController owner)
@@ -39,7 +37,7 @@ public class StackQueueControls : MonoBehaviour
         _pushEnqueueButton.onClick.AddListener(_controller.PushAndEnqueue);
         _popDequeueButton.onClick.AddListener(_controller.PopAndDequeue);
 
-        ConnectRetainedValueClick();
+        _valueInput.onSelect.AddListener(PrepareRetainedValueForEdit);
     }
 
     private void OnDestroy()
@@ -52,8 +50,7 @@ public class StackQueueControls : MonoBehaviour
         _pushEnqueueButton.onClick.RemoveListener(_controller.PushAndEnqueue);
         _popDequeueButton.onClick.RemoveListener(_controller.PopAndDequeue);
 
-        if (_valueInputEventTrigger != null && _retainedValueClickEntry != null)
-            _valueInputEventTrigger.triggers.Remove(_retainedValueClickEntry);
+        _valueInput.onSelect.RemoveListener(PrepareRetainedValueForEdit);
     }
 
     // 타입 선택이 끝날 때까지 컨테이너 조작 영역의 입력을 막는다.
@@ -74,10 +71,10 @@ public class StackQueueControls : MonoBehaviour
 
         _valueInput.text = string.Empty;
         _valueInput.contentType = type == ValueType.Int
-            ? InputField.ContentType.IntegerNumber
+            ? TMP_InputField.ContentType.IntegerNumber
             : type == ValueType.Float
-                ? InputField.ContentType.DecimalNumber
-                : InputField.ContentType.Standard;
+                ? TMP_InputField.ContentType.DecimalNumber
+                : TMP_InputField.ContentType.Standard;
         _valueInput.Select();
         _valueInput.ActivateInputField();
     }
@@ -101,23 +98,8 @@ public class StackQueueControls : MonoBehaviour
         _replaceValueOnNextEdit = true;
     }
 
-    // Legacy InputField에는 onSelect 이벤트가 없으므로 클릭 이벤트를 직접 연결한다.
-    private void ConnectRetainedValueClick()
-    {
-        _valueInputEventTrigger = _valueInput.GetComponent<EventTrigger>();
-        if (_valueInputEventTrigger == null)
-            _valueInputEventTrigger = _valueInput.gameObject.AddComponent<EventTrigger>();
-
-        _retainedValueClickEntry = new EventTrigger.Entry
-        {
-            eventID = EventTriggerType.PointerClick
-        };
-        _retainedValueClickEntry.callback.AddListener(PrepareRetainedValueForEdit);
-        _valueInputEventTrigger.triggers.Add(_retainedValueClickEntry);
-    }
-
     // 보존된 값을 다시 편집하려고 클릭한 경우 전체 선택해 첫 글자 입력 시 바로 교체되게 한다.
-    private void PrepareRetainedValueForEdit(BaseEventData _)
+    private void PrepareRetainedValueForEdit(string _)
     {
         if (!_replaceValueOnNextEdit)
             return;

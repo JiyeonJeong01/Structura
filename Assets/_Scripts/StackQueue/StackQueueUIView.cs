@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using TMPro;
 
 /// <summary>고정 슬롯에 Stack과 Queue의 현재 원소, 접근 방향, 끝 위치를 표시한다.</summary>
 public class StackQueueUIView : MonoBehaviour
@@ -11,9 +12,9 @@ public class StackQueueUIView : MonoBehaviour
     [SerializeField] private StackQueueSlotUIView[] _stackSlots;
     [SerializeField] private StackQueueSlotUIView[] _queueSlots;
 
-    [SerializeField] private Text _stackTopText;
-    [SerializeField] private Text _queueFrontText;
-    [SerializeField] private Text _queueRearText;
+    [SerializeField] private TMP_Text _stackTopText;
+    [SerializeField] private TMP_Text _queueFrontText;
+    [SerializeField] private TMP_Text _queueRearText;
 
     // Stack의 바닥은 왼쪽에 유지하고 top만 오른쪽으로 늘어난다.
     public void Refresh(Stack<object> stack, Queue<object> queue)

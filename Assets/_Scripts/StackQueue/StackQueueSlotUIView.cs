@@ -1,15 +1,16 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using TMPro;
 
 /// <summary>한 고정 슬롯의 번호와 점유 여부를 표현한다.</summary>
 public class StackQueueSlotUIView : MonoBehaviour
 {
     private const float SlotStride = 120f;
 
-    [SerializeField] private Text _indexText;
-    [SerializeField] private Text _valueText;
-    [SerializeField] private Text _orderText;
+    [SerializeField] private TMP_Text _indexText;
+    [SerializeField] private TMP_Text _valueText;
+    [SerializeField] private TMP_Text _orderText;
     [SerializeField] private Image _background;
     [SerializeField] private Color _occupiedColor = new Color(0.12f, 0.26f, 0.34f);
     [SerializeField] private Color _emptyColor = new Color(0.065f, 0.10f, 0.15f);

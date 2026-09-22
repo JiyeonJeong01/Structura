@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 /// <summary>
 /// Deque를 조회하여 전체 MAP과 Start/Finish 카드를 표시한다.
@@ -13,8 +14,8 @@ public class DequeUIView : MonoBehaviour
     [SerializeField] private DequeMapRowUIView _rowPrefab;
 
     // MAP 왼쪽의 iterator 상세 정보 UI
-    [SerializeField] private Text _startText;
-    [SerializeField] private Text _finishText;
+    [SerializeField] private TMP_Text _startText;
+    [SerializeField] private TMP_Text _finishText;
 
     // 리스트 index를 실제 map index와 일치시켜 행을 재사용한다.
     private readonly List<DequeMapRowUIView> _rows = new List<DequeMapRowUIView>();

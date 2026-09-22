@@ -1,15 +1,16 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
+using TMPro;
 
 [RequireComponent(typeof(HashEntryEffects))]
 public class HashEntryUIView : UIEntry<HashEntry<object, object>>
 {
     public HashEntryEffects Effects => GetComponent<HashEntryEffects>();
 
-    [FormerlySerializedAs("keyText"), SerializeField] private Text _keyText;
-    [FormerlySerializedAs("valueText"), SerializeField] private Text _valueText;
-    [FormerlySerializedAs("nextText"), SerializeField] private Text _nextText;
+    [FormerlySerializedAs("keyText"), SerializeField] private TMP_Text _keyText;
+    [FormerlySerializedAs("valueText"), SerializeField] private TMP_Text _valueText;
+    [FormerlySerializedAs("nextText"), SerializeField] private TMP_Text _nextText;
     [FormerlySerializedAs("background"), SerializeField] private Image _background;
     [FormerlySerializedAs("normalColor"), SerializeField] private Color _normalColor = new Color(0.12f, 0.19f, 0.28f);
     [FormerlySerializedAs("foundColor"), SerializeField] private Color _foundColor = new Color(0.12f, 0.48f, 0.39f);
