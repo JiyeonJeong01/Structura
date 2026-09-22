@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
+using TMPro;
 
 /// <summary>map 한 행의 block 참조와 가로 슬롯 배열을 표시한다.</summary>
 public class DequeMapRowUIView : MonoBehaviour
 {
     // map 참조 텍스트와 block 슬롯을 정렬할 부모 및 프리팹
-    [SerializeField] private Text _mapText;
+    [SerializeField] private TMP_Text _mapText;
     [SerializeField] private RectTransform _slotRoot;
     [SerializeField] private DequeSlotUIView _slotPrefab;
 

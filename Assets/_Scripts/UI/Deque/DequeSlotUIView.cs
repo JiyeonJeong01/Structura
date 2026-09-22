@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 /// <summary>한 슬롯의 값, index, iterator 마커와 조회·변경 강조를 표시한다.</summary>
 [RequireComponent(typeof(DequeSlotEffects))]
@@ -11,15 +12,15 @@ public class DequeSlotUIView : UIEntry<object>
     public bool IsOccupied => LogicalIndex >= 0;
 
     // 물리 slot 번호, 논리 index와 값 표시 UI
-    [SerializeField] private Text _indexText;
-    [SerializeField] private Text _valueText;
+    [SerializeField] private TMP_Text _indexText;
+    [SerializeField] private TMP_Text _valueText;
 
     // 같은 슬롯에 함께 표시될 수 있는 Start / Finish 마커
-    [SerializeField] private Text _startText;
-    [SerializeField] private Text _finishText;
+    [SerializeField] private TMP_Text _startText;
+    [SerializeField] private TMP_Text _finishText;
 
     // READ / CHANGED 문구와 상태 색상 UI
-    [SerializeField] private Text _stateText;
+    [SerializeField] private TMP_Text _stateText;
     [SerializeField] private Image _background;
     [SerializeField] private Outline _outline;
     [SerializeField] private Color _occupiedColor = new Color(0.12f, 0.26f, 0.34f);

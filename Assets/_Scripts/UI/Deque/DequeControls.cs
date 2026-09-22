@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 /// <summary>타입 선택과 입력을 표시하고 버튼을 Controller에 연결한다.</summary>
 public class DequeControls : MonoBehaviour
@@ -13,16 +14,16 @@ public class DequeControls : MonoBehaviour
 
     // Setup 패널 UI
     [SerializeField] private GameObject _setupPanel;
-    [SerializeField] private Dropdown _valueTypeDropdown;
+    [SerializeField] private TMP_Dropdown _valueTypeDropdown;
 
     // 타입 선택 전에는 모든 조작 영역의 입력을 차단한다.
     [SerializeField] private CanvasGroup _operations;
 
     // 기본 양끝 연산의 Value와 Index Access / Cost Demo가 공유하는 입력 UI
-    [SerializeField] private InputField _valueInput;
-    [SerializeField] private InputField _getAndRemoveAtInput;
-    [SerializeField] private InputField _setAndInsertAtInput;
-    [SerializeField] private InputField _setAndInsertAtValueInput;
+    [SerializeField] private TMP_InputField _valueInput;
+    [SerializeField] private TMP_InputField _getAndRemoveAtInput;
+    [SerializeField] private TMP_InputField _setAndInsertAtInput;
+    [SerializeField] private TMP_InputField _setAndInsertAtValueInput;
 
     // 세션 시작 및 기본 양끝 연산 Button UI
     [SerializeField] private Button _startButton;
@@ -37,12 +38,12 @@ public class DequeControls : MonoBehaviour
     [SerializeField] private Button _setButton;
     [SerializeField] private Button _insertAtButton;
     [SerializeField] private Button _removeAtButton;
-    [SerializeField] private Text _getRemoveAtText;
+    [SerializeField] private TMP_Text _getRemoveAtText;
 
     // 선택 타입, 자료구조 통계, 조작 결과 텍스트 UI
-    [SerializeField] private Text _typeText;
-    [SerializeField] private Text _statsText;
-    [SerializeField] private Text _feedbackText;
+    [SerializeField] private TMP_Text _typeText;
+    [SerializeField] private TMP_Text _statsText;
+    [SerializeField] private TMP_Text _feedbackText;
 
     private DequeController _controller;
 
@@ -114,13 +115,13 @@ public class DequeControls : MonoBehaviour
         _setAndInsertAtInput.text = "0";
 
         // index는 항상 정수다. 두 Value 입력란은 같은 타입 제한을 사용한다.
-        _getAndRemoveAtInput.contentType = InputField.ContentType.IntegerNumber;
-        _setAndInsertAtInput.contentType = InputField.ContentType.IntegerNumber;
+        _getAndRemoveAtInput.contentType = TMP_InputField.ContentType.IntegerNumber;
+        _setAndInsertAtInput.contentType = TMP_InputField.ContentType.IntegerNumber;
 
         // 타입 결정
         var contentType = type == ValueType.Int ? 
-            InputField.ContentType.IntegerNumber
-            : type == ValueType.Float ? InputField.ContentType.DecimalNumber : InputField.ContentType.Standard;
+            TMP_InputField.ContentType.IntegerNumber
+            : type == ValueType.Float ? TMP_InputField.ContentType.DecimalNumber : TMP_InputField.ContentType.Standard;
 
         _valueInput.contentType = _setAndInsertAtValueInput.contentType = contentType;
         _valueInput.Select();
