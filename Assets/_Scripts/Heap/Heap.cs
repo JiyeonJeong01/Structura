@@ -5,6 +5,7 @@ public class Heap<T>
     private const int WrongIndex = -1;
 
     public int Count { get; private set; }
+    public int LastStepCompareIndex { get; private set; } = WrongIndex;
 
     private List<T> _vector = new List<T>();
 
@@ -12,6 +13,7 @@ public class Heap<T>
     {
         _vector.Clear();
         Count = 0;
+        LastStepCompareIndex = WrongIndex;
     }
 
     public void Push(T value)
@@ -52,6 +54,7 @@ public class Heap<T>
     {
         _vector.Add(value);
         Count++;
+        LastStepCompareIndex = WrongIndex;
 
         return Count - 1;
     }
@@ -59,6 +62,7 @@ public class Heap<T>
     public int BeginPopStep(out T value)
     {
         value = default;
+        LastStepCompareIndex = WrongIndex;
 
         if (IsEmpty())
             return WrongIndex;
@@ -83,11 +87,17 @@ public class Heap<T>
     {
         _vector.Clear();
         Count = 0;
+        LastStepCompareIndex = WrongIndex;
     }
 
     public bool IsEmpty()
     {
         return Count <= 0;
+    }
+
+    public T GetValueAt(int index)
+    {
+        return _vector[index];
     }
 
     private void SiftUp(int index)
@@ -132,24 +142,30 @@ public class Heap<T>
         }
     }
 
-    public int SiftUpStep(int index)
+    public int SiftUpStep(int index, bool swap = true)
     {
+        LastStepCompareIndex = WrongIndex;
+
         if (index <= 0)
             return WrongIndex;
 
         int parentIndex = GetParentIndex(index);
+        LastStepCompareIndex = parentIndex;
 
         // 부모가 나보다 크다면 멈추기
         if (Comparer<T>.Default.Compare(_vector[parentIndex], _vector[index]) >= 0)
             return WrongIndex;
 
-        Swap(parentIndex, index);
+        if (swap)
+            Swap(parentIndex, index);
 
         return parentIndex;
     }
 
-    public int SiftDownStep(int index)
+    public int SiftDownStep(int index, bool swap = true)
     {
+        LastStepCompareIndex = WrongIndex;
+
         int leftChildIndex = GetLeftChildIndex(index);
         if (leftChildIndex >= Count)
             return WrongIndex;
@@ -163,12 +179,14 @@ public class Heap<T>
         {
             largerChildIndex = rightChildIndex;
         }
+        LastStepCompareIndex = largerChildIndex;
 
         // 두 자식보다 큰 곳이 부모로 있어도 되는 자리이다.
         if (Comparer<T>.Default.Compare(_vector[index], _vector[largerChildIndex]) >= 0)
             return WrongIndex;
 
-        Swap(index, largerChildIndex);
+        if (swap)
+            Swap(index, largerChildIndex);
 
         return largerChildIndex;
     }
