@@ -100,7 +100,7 @@ public class BinarySearchTree<T>
         while (currentNode != null)
         {
             CompareRes result = Utils.Compare(value, currentNode.Value);
-            if (result == CompareRes.Same)
+            if (result == CompareRes.Equal)
                 return currentNode;
 
             parentNode = currentNode;

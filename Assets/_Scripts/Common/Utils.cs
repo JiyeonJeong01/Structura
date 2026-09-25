@@ -4,7 +4,7 @@ using UnityEngine;
 public enum CompareRes
 {
     Less, 
-    Same,
+    Equal,
     Greater,
 
     End
@@ -21,6 +21,6 @@ public class Utils
             return CompareRes.Less;
         if (res > 0)
             return CompareRes.Greater;
-        return CompareRes.Same;
+        return CompareRes.Equal;
     }
 }
