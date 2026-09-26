@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-public class DoublyLinkedList<T>
+public class DoublyLinkedList <T>
 {
     private DoublyLinkedListNode<T> _head;
     private DoublyLinkedListNode<T> _tail;

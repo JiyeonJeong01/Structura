@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Stack_Queue.unity
     guid: acd6a16a140f16c4e83a7410a428aee0
+  - enabled: 1
+    path: Assets/Scenes/DoublyLinkedListScene.unity
+    guid: eab934fef6a28974ba9ed13645925716
   m_configObjects:
     com.unity.dt.app-ui: {fileID: 11400000, guid: 1b1c20d82303e4b5781c3ef50ac1449f, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
