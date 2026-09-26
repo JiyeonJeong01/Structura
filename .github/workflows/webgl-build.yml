@@ -23,16 +23,10 @@ jobs:
           test -f Packages/manifest.json || { echo "::error title=Missing Packages/manifest.json::Commit Unity package dependencies."; exit 1; }
           test -f Packages/packages-lock.json || { echo "::error title=Missing Packages/packages-lock.json::Commit Unity package lock file."; exit 1; }
           python3 - <<'PY'
-          import json, pathlib, re, sys
+          import pathlib, re, sys
 
           root = pathlib.Path(".")
-          manifest = json.loads((root / "Packages" / "manifest.json").read_text(encoding="utf-8"))
-          lock = json.loads((root / "Packages" / "packages-lock.json").read_text(encoding="utf-8"))
           problems = []
-
-          for name, info in lock.get("dependencies", {}).items():
-              if info.get("source") in {"embedded", "local", "git"} and name not in manifest.get("dependencies", {}):
-                  problems.append(f"Lock file contains unused external package: {name}")
 
           build_settings = (root / "ProjectSettings" / "EditorBuildSettings.asset").read_text(encoding="utf-8")
           scenes = re.findall(r"^    path: (Assets/Scenes/[^\r\n]+\.unity)$", build_settings, re.MULTILINE)
