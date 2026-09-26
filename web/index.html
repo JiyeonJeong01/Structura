@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Structura — 자료구조 시각화</title>
+<style>
+  :root {
+    --bg: #14141a;
+    --panel: #1e1e26;
+    --text: #e8e8ee;
+    --muted: #9a9aa8;
+    --accent: #6c8cff;
+    --border: #2c2c36;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Segoe UI", "Pretendard", "Malgun Gothic", sans-serif;
+    line-height: 1.6;
+  }
+  header {
+    padding: 48px 24px 24px;
+    text-align: center;
+  }
+  header h1 {
+    margin: 0 0 8px;
+    font-size: 2rem;
+  }
+  header p {
+    margin: 0;
+    color: var(--muted);
+  }
+  main {
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 0 24px 64px;
+  }
+  .player-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 8 / 5;
+    background: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+  }
+  .player-wrap iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  .actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .actions a {
+    color: var(--accent);
+    text-decoration: none;
+    font-size: 0.9rem;
+  }
+  .actions a:hover { text-decoration: underline; }
+  section {
+    margin-top: 40px;
+    padding: 24px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  section h2 {
+    margin-top: 0;
+    font-size: 1.1rem;
+  }
+  section ul {
+    margin: 0;
+    padding-left: 20px;
+    color: var(--muted);
+  }
+  section li { margin-bottom: 6px; }
+  footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--muted);
+    font-size: 0.85rem;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Structura</h1>
+  <p>스택, 큐, 덱, 해시테이블, 힙, 이중 연결 리스트를 눈으로 보는 자료구조 시각화 데모</p>
+</header>
+
+<main>
+  <div class="player-wrap">
+    <iframe id="player" src="player/index.html" allow="fullscreen" allowfullscreen></iframe>
+  </div>
+  <div class="actions">
+    <a href="player/index.html" target="_blank" rel="noopener">새 탭에서 크게 보기 ↗</a>
+  </div>
+
+  <section>
+    <h2>사용 방법</h2>
+    <ul>
+      <li>로비 화면에서 원하는 자료구조를 선택해 씬으로 이동합니다.</li>
+      <li>화면 하단의 버튼으로 삽입/삭제 등 각 자료구조의 연산을 실행할 수 있습니다.</li>
+      <li>더 크게 보고 싶다면 화면 우측 하단의 전체화면 버튼 또는 위 "새 탭에서 크게 보기"를 이용하세요.</li>
+    </ul>
+  </section>
+</main>
+
+<footer>
+  Made with Unity · Structura
+</footer>
+
+</body>
+</html>

@@ -72,7 +72,13 @@ jobs:
         with:
           targetPlatform: WebGL
 
+      - name: Assemble site
+        run: |
+          mkdir -p site/player
+          cp -r web/. site/
+          cp -r build/WebGL/WebGL/. site/player/
+
       - uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: build/WebGL/WebGL
+          publish_dir: site
