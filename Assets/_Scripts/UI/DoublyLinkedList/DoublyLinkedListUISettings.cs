@@ -56,6 +56,12 @@ public static class DoublyLinkedListUISettings
     public const float MissFadeInDuration = 0.16f;
     public const float MissFadeOutDuration = 0.35f;
 
+    // Clear 시 노드가 위로 날아가는 거리와 좌우 퍼짐, 노드별 출발 간격이다.
+    public const float ClearNodeDuration = 0.4f;
+    public const float ClearNodeStagger = 0.04f;
+    public const float ClearVerticalTravel = 120f;
+    public const float ClearHorizontalSpread = 24f;
+
     public const int DefaultFontSize = 20;
     public const int DetailFontSize = 18;
     public const int TitleFontSize = 30;

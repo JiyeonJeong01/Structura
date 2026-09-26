@@ -105,14 +105,35 @@ public class DoublyLinkedListController : MonoBehaviour
         StartCoroutine(FindRoutine(value));
     }
 
+    // 노드가 있으면 사라지는 연출을 먼저 재생하고 빈 리스트는 즉시 정리한다.
     public void Clear()
     {
         if (!IsStarted || IsBusy)
             return;
 
+        if (Count > 0)
+        {
+            StartCoroutine(ClearRoutine());
+            return;
+        }
+
         _list.Clear();
         ActiveIndex = UISettings.NoSelection;
 
+        Refresh();
+        _controls.SetFeedback("List cleared.");
+    }
+
+    // 연출이 끝난 뒤 데이터를 비운다. 중간에 중단되면 기존 데이터로 화면을 복구한다.
+    private IEnumerator ClearRoutine()
+    {
+        SetBusy(true);
+        yield return Play(_view.AnimateClear());
+
+        _list.Clear();
+        ActiveIndex = UISettings.NoSelection;
+
+        SetBusy(false);
         Refresh();
         _controls.SetFeedback("List cleared.");
     }

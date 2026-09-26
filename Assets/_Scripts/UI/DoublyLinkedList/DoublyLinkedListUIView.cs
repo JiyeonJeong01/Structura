@@ -106,6 +106,32 @@ public class DoublyLinkedListUIView : MonoBehaviour
         return sequence;
     }
 
+    // 간선을 접은 뒤 노드들을 짧은 간격으로 위쪽에 흩날리며 지운다.
+    public Tween AnimateClear()
+    {
+        var sequence = DOTween.Sequence().SetUpdate(true);
+        sequence.Append(CollapseLinks(0, _nodes.Count + 1));
+
+        var flySequence = DOTween.Sequence();
+        float centerIndex = (_nodes.Count - 1) * 0.5f;
+        for (int i = 0; i < _nodes.Count; i++)
+        {
+            var node = _nodes[i];
+            float delay = i * UISettings.ClearNodeStagger;
+            float driftX = (i - centerIndex) * UISettings.ClearHorizontalSpread;
+            Vector2 destination = node.Rect.anchoredPosition
+                + new Vector2(driftX, UISettings.ClearVerticalTravel);
+
+            // 위치 이동과 페이드를 같은 시점에 시작하고 노드만 날려 센티널은 남긴다.
+            flySequence.Insert(delay, node.Rect.DOAnchorPos(destination, UISettings.ClearNodeDuration)
+                .SetEase(Ease.InQuad));
+            flySequence.Insert(delay, node.Group.DOFade(0f, UISettings.ClearNodeDuration));
+        }
+
+        sequence.Append(flySequence);
+        return sequence;
+    }
+
     // 사라진 노드를 제거한 뒤 빈자리를 닫고 앞뒤 사이 연결을 준비한다.
     public Tween CloseGap(int index)
     {
