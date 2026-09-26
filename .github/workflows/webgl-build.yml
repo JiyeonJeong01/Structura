@@ -14,11 +14,61 @@ jobs:
         with:
           lfs: true
 
+      - name: Validate Unity WebGL inputs
+        shell: bash
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+        run: |
+          test -n "$UNITY_LICENSE" || { echo "::error title=Missing UNITY_LICENSE::Add UNITY_LICENSE in repository Actions secrets."; exit 1; }
+          test -f Packages/manifest.json || { echo "::error title=Missing Packages/manifest.json::Commit Unity package dependencies."; exit 1; }
+          test -f Packages/packages-lock.json || { echo "::error title=Missing Packages/packages-lock.json::Commit Unity package lock file."; exit 1; }
+          python3 - <<'PY'
+          import json, pathlib, re, sys
+
+          root = pathlib.Path(".")
+          manifest = json.loads((root / "Packages" / "manifest.json").read_text(encoding="utf-8"))
+          lock = json.loads((root / "Packages" / "packages-lock.json").read_text(encoding="utf-8"))
+          problems = []
+
+          for name, info in lock.get("dependencies", {}).items():
+              if info.get("source") in {"embedded", "local", "git"} and name not in manifest.get("dependencies", {}):
+                  problems.append(f"Lock file contains unused external package: {name}")
+
+          build_settings = (root / "ProjectSettings" / "EditorBuildSettings.asset").read_text(encoding="utf-8")
+          scenes = re.findall(r"^    path: (Assets/Scenes/[^\r\n]+\.unity)$", build_settings, re.MULTILINE)
+          if not scenes:
+              problems.append("No enabled scenes were found in EditorBuildSettings.asset")
+          elif scenes[0] != "Assets/Scenes/LobyScene.unity":
+              problems.append(f"First build scene must be LobyScene, got {scenes[0]}")
+
+          for scene in scenes:
+              if not (root / scene).is_file():
+                  problems.append(f"Build scene file is missing: {scene}")
+
+          lobby = root / "Assets" / "Scenes" / "LobyScene.unity"
+          if lobby.is_file():
+              build_scene_names = {pathlib.Path(scene).stem for scene in scenes}
+              for target in sorted(set(re.findall(r"^  _sceneName: ([^\r\n]+)$", lobby.read_text(encoding="utf-8"), re.MULTILINE))):
+                  if target not in build_scene_names:
+                      problems.append(f"LobyScene target is not in build settings: {target}")
+
+          project_settings = (root / "ProjectSettings" / "ProjectSettings.asset").read_text(encoding="utf-8")
+          if "webGLDecompressionFallback: 1" not in project_settings:
+              problems.append("Enable WebGL decompression fallback for GitHub Pages hosting")
+
+          if problems:
+              for problem in problems:
+                  print(f"::error::{problem}")
+              sys.exit(1)
+          PY
+
       - uses: actions/cache@v4
         with:
           path: Library
-          key: Library-WebGL
-          restore-keys: Library-
+          key: Library-WebGL-${{ runner.os }}-${{ hashFiles('ProjectSettings/ProjectVersion.txt', 'Packages/manifest.json', 'Packages/packages-lock.json') }}-${{ github.sha }}
+          restore-keys: |
+            Library-WebGL-${{ runner.os }}-${{ hashFiles('ProjectSettings/ProjectVersion.txt', 'Packages/manifest.json', 'Packages/packages-lock.json') }}-
+            Library-WebGL-${{ runner.os }}-
 
       - uses: game-ci/unity-builder@v4
         env:

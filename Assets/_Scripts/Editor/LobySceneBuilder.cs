@@ -12,8 +12,8 @@ using static HashUIFactory;
 public static class LobySceneBuilder
 {
     private const string ScenePath = "Assets/Scenes/LobyScene.unity";
-    private static readonly string[] SceneNames = { "HashTableScene", "DequeScene", "Stack_Queue" };
-    private static readonly string[] Captions = { "HashTable", "Deque", "Stack/Queue" };
+    private static readonly string[] SceneNames = { "DequeScene", "HeapScene", "Stack_Queue", "HashTableScene" };
+    private static readonly string[] Captions = { "Deque", "Heap", "Stack/Queue", "HashTable" };
 
     [MenuItem("Structura/Build Loby Scene")]
     public static void Build()
