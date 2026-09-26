@@ -19,6 +19,7 @@ public class DoublyLinkedListControls : MonoBehaviour
     [SerializeField] private Button[] _deleteButtons;
     [SerializeField] private Button _previousButton;
     [SerializeField] private Button _nextButton;
+    [SerializeField] private Button _clearButton;
     [SerializeField] private TMP_Text _statsText;
     [SerializeField] private TMP_Text _typeText;
     [SerializeField] private TMP_Text _feedbackText;
@@ -36,6 +37,8 @@ public class DoublyLinkedListControls : MonoBehaviour
         _previousButton.onClick.AddListener(Previous);
         _nextButton.onClick.AddListener(Next);
         _valueInput.onSelect.AddListener(PrepareRetainedValueForEdit);
+        _clearButton.onClick.AddListener(controller.Clear);
+
         for (int i = 0; i < _insertActions.Length; i++)
         {
             int location = i;
@@ -126,6 +129,7 @@ public class DoublyLinkedListControls : MonoBehaviour
         _previousButton.onClick.RemoveListener(Previous);
         _nextButton.onClick.RemoveListener(Next);
         _valueInput.onSelect.RemoveListener(PrepareRetainedValueForEdit);
+        _clearButton.onClick.RemoveListener(_controller.Clear);
         for (int i = 0; i < _insertActions.Length; i++)
         {
             _insertButtons[i].onClick.RemoveListener(_insertActions[i]);

@@ -105,6 +105,18 @@ public class DoublyLinkedListController : MonoBehaviour
         StartCoroutine(FindRoutine(value));
     }
 
+    public void Clear()
+    {
+        if (!IsStarted || IsBusy)
+            return;
+
+        _list.Clear();
+        ActiveIndex = UISettings.NoSelection;
+
+        Refresh();
+        _controls.SetFeedback("List cleared.");
+    }
+
     // 삽입 효과 및 애니메이션을 재생한다.
     private IEnumerator InsertRoutine(int index, object value)
     {
